@@ -55,14 +55,3 @@ void ACHTPlayerController::CHTRespawn()
 		SetCameraToPawn();
 	}
 }
-bool ACHTPlayerController::CanMoveLeft() {
-	if (auto TopDownCharacter = GetPawn()) {
-		if (GetTopDownCamera()) {
-			float X1 = TopDownCharacter->GetActorLocation().X;
-			float X2 = TopDownCamera->GetActorLocation().X;
-			if (X2 - X1 > MAXLeftMoveDistance)
-				return false;
-		}
-	}
-	return true;
-}

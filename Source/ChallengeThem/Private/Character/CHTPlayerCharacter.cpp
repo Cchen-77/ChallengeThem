@@ -60,12 +60,8 @@ void ACHTPlayerCharacter::OnMouseMove(const FInputActionValue& value) {
 
 void ACHTPlayerCharacter::OnMove(const FInputActionValue& value)
 {
-	if (auto PC = Cast<ACHTPlayerController>(GetController())) {
-		if (value.Get<FVector2D>().X != -1||PC->CanMoveLeft()) {
-			Super::OnMove(value);
-			SetWeaponTransform();
-		}
-	}
+	Super::OnMove(value);
+	SetWeaponTransform();
 }
 void ACHTPlayerCharacter::OnAttack(const FInputActionValue& value) {
 	//UE_LOG(LogTemp, Display, TEXT("ATTACK!"));

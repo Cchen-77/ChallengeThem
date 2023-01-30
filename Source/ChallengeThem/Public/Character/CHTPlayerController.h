@@ -17,7 +17,6 @@ class CHALLENGETHEM_API ACHTPlayerController : public ATopDown2DController
 public:
 	ACHTPlayerController();
 	virtual void Tick(float DeltaTime) override;	
-	bool CanMoveLeft();
 	UFUNCTION(BlueprintCallable)
 		void SetCameraToPawn();
 protected:
