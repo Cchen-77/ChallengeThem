@@ -16,7 +16,5 @@ class CHALLENGETHEM_API UCHTGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 public:
-	TopDownCharacterManager CHTCharacterManager;
-	void RegisterToCharacterManager(ATopDownCharacter* CHTCharacter);
 	APawn* ResetToCheckpoint();
 };

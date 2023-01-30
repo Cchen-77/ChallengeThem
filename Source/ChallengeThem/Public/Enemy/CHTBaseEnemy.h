@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Character/TopDownCharacter.h"
+#include"GameBase/CHTResetInterface.h"
 #include "CHTBaseEnemy.generated.h"
 
 /**
@@ -13,12 +14,13 @@ class ACHTBaseEnemyWeakpoint;
 class UPaperFlipbookComponet;
 class UBehaviorTree;
 UCLASS()
-class CHALLENGETHEM_API ACHTBaseEnemy : public ATopDownCharacter
+class CHALLENGETHEM_API ACHTBaseEnemy : public ATopDownCharacter,public ICHTResetInterface
 {
 	GENERATED_BODY()
 public:
 	ACHTBaseEnemy();
 	virtual void Tick(float DeltaTime) override;
+	virtual void Reset() override;
 	UFUNCTION(BlueprintCallable)
 		void SpawnWeakpoints();
 	UFUNCTION()

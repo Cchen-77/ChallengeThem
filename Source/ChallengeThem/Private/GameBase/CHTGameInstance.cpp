@@ -6,15 +6,16 @@
 #include"GameBase/CHTCheckpoint.h"
 #include"GameBase/CHTGameStateBase.h"
 #include"Kismet/GameplayStatics.h"
-void UCHTGameInstance::RegisterToCharacterManager(ATopDownCharacter * CHTCharacter)
-{
-	CHTCharacterManager.Register(CHTCharacter);
-}
-
+#include"GameBase/CHTResetInterface.h"
 APawn* UCHTGameInstance::ResetToCheckpoint()
 {
-	
-	CHTCharacterManager.DestroyAll();
+	TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsWithInterface(GetWorld(), UCHTResetInterface::StaticClass(), OutActors);
+	for (AActor* ResetActor : OutActors) {
+		if (auto CHTResetActor = Cast<ICHTResetInterface>(ResetActor)) {
+			CHTResetActor->Reset();
+		}
+	}
 	FRotator RespawnRotation = FRotator(0, 0, 0);
 	FVector RespawnLocation = FVector(0, 0, 0);
 	auto CHTGameState = Cast<ACHTGameStateBase>(GetWorld()->GetGameState());

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Character/TopDownCharacter.h"
 #include"InputActionValue.h"
+#include"GameBase/CHTResetInterface.h"
 #include "CHTPlayerCharacter.generated.h"
 
 /**
@@ -16,12 +17,13 @@ class UInputMappingContext;
 class UInputAction;
 class UPlayerWeaponComponent;
 UCLASS()
-class CHALLENGETHEM_API ACHTPlayerCharacter : public ATopDownCharacter
+class CHALLENGETHEM_API ACHTPlayerCharacter : public ATopDownCharacter, public ICHTResetInterface
 {
 	GENERATED_BODY()
 public:
 	ACHTPlayerCharacter();
 	virtual void Tick(float DeltaTime) override;
+	virtual void Reset() override;
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

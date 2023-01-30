@@ -36,13 +36,12 @@ void ACHTPlayerCharacter::BeginPlay() {
 	
 	OnTakeAnyDamage.AddDynamic(PlayerHealthComponent, &UPlayerHealthComponent::TakeDamage);
 	PlayerHealthComponent->OnPlayerDead.AddDynamic(this, &ACHTPlayerCharacter::OnDead);
-
-	if (auto CHTGameInstance = Cast<UCHTGameInstance>(GetGameInstance())) {
-		CHTGameInstance->RegisterToCharacterManager(this);
-	}
 }
 void ACHTPlayerCharacter::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
+}
+void ACHTPlayerCharacter::Reset() {
+	Destroy();
 }
 void ACHTPlayerCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);

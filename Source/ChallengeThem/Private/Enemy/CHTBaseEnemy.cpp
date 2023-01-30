@@ -12,16 +12,17 @@ ACHTBaseEnemy::ACHTBaseEnemy() {
 	AIControllerClass = ACHTBaseEnemyController::StaticClass();
 	WeakpointLayer = CreateDefaultSubobject<UPaperFlipbookComponent>("WeakpointLayer");
 	WeakpointLayer->SetupAttachment(GetSprite());
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 void ACHTBaseEnemy::BeginPlay() {
 	Super::BeginPlay();
 	SpawnWeakpoints();
-	if (auto CHTGameInstance = Cast<UCHTGameInstance>(GetGameInstance())) {
-		CHTGameInstance->RegisterToCharacterManager(this);
-	}
 }
 void ACHTBaseEnemy::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
+}
+void ACHTBaseEnemy::Reset() {
+	Destroy();
 }
 void ACHTBaseEnemy::SpawnWeakpoints() {
 	Weakpoint_1 = SpawnWeakpoint(1, HavWeakpoint_1);
