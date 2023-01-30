@@ -17,7 +17,7 @@ class TOPDOWN2D_API ATopDown2DController : public APlayerController
 public:
 	ATopDown2DController();
 	virtual void Tick(float DeltaTime) override;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Camera)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
 		bool CameraLocked = true;
 	UFUNCTION(BlueprintCallable)
 		ACameraActor* GetTopDownCamera() const;

@@ -9,6 +9,7 @@
 /**
  * 
  */
+class ACHTAirWall;
 class UCursorLocatorWidget;
 UCLASS()
 class CHALLENGETHEM_API ACHTPlayerController : public ATopDown2DController
@@ -18,15 +19,21 @@ public:
 	ACHTPlayerController();
 	virtual void Tick(float DeltaTime) override;	
 	UFUNCTION(BlueprintCallable)
-		void SetCameraToPawn();
+		void InitCameraAndWall();
 protected:
 	virtual void BeginPlay() override;
 	virtual void CameraFollow(float DeltaTime) override;
-	
+	UPROPERTY(EditDefaultsOnly, Category = AirWall)
+		TSubclassOf<ACHTAirWall> AirWallClass;
+	virtual void WallFollow();
 	UPROPERTY(EditDefaultsOnly, Category = Camera)
 		bool CameraForLevel = true;
 	UPROPERTY(EditDefaultsOnly, Category = Camera)
-		float MAXLeftMoveDistance = 100.0f;
+		float WallHalfDistance = 100.0f;
+	UPROPERTY()
+		ACHTAirWall* WallLeft;
+	UPROPERTY()
+		ACHTAirWall* WallRight;
 	UFUNCTION(BlueprintCallable)
 	void CHTRespawn();
 };

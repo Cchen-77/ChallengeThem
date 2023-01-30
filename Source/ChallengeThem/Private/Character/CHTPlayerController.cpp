@@ -7,6 +7,8 @@
 #include"Camera/CameraActor.h"
 #include"GameBase/CHTGameInstance.h"
 #include"GameBase/CHTGameStateBase.h"
+#include"Kismet/KismetSystemLibrary.h"
+#include"GameBase/CHTAirWall.h"
 ACHTPlayerController::ACHTPlayerController() {
 
 }
@@ -14,11 +16,13 @@ void ACHTPlayerController::BeginPlay() {
 	Super::BeginPlay();
 	SetInputMode(FInputModeGameOnly());
 	UWidgetBlueprintLibrary::SetFocusToGameViewport();
+	InitCameraAndWall();
 }
 void ACHTPlayerController::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 }
 void ACHTPlayerController::CameraFollow(float DeltaTime) {
+	if (!CameraLocked) return;
 	if (CameraForLevel) {
 		if (auto TopDownCharacter = GetPawn()) {
 			if (GetTopDownCamera()) {
@@ -40,18 +44,41 @@ void ACHTPlayerController::CameraFollow(float DeltaTime) {
 	else {
 		Super::CameraFollow(DeltaTime);
 	}
+	WallFollow();
 }
-void ACHTPlayerController::SetCameraToPawn() {
+void ACHTPlayerController::WallFollow() {
+	auto CameraX = GetTopDownCamera()->GetActorLocation().X;
+	if (WallLeft) {
+		WallLeft->SetActorLocation(FVector(CameraX - WallHalfDistance, 0, 0));
+	}
+	if (WallRight) {
+		WallRight->SetActorLocation(FVector(CameraX + WallHalfDistance, 0, 0));
+	}
+}
+void ACHTPlayerController::InitCameraAndWall() {
+
+	if (UKismetSystemLibrary::IsValid(WallLeft)) {
+		WallLeft->Destroy();
+	}
+	if (UKismetSystemLibrary::IsValid(WallRight)) {
+		WallRight->Destroy();
+	}
 	FVector Dest = GetPawn()->GetActorLocation();
 	Dest.Y = 0;
 	Dest.Z = CameraHeight;
 	GetTopDownCamera()->SetActorLocation(Dest);
+	auto CameraX = GetTopDownCamera()->GetActorLocation().X;
+	FVector LLocation = FVector(CameraX - WallHalfDistance, 0, 0);
+	FVector RLocation = FVector(CameraX + WallHalfDistance, 0, 0);
+	FRotator Rotation;
+	WallLeft = Cast<ACHTAirWall>(GetWorld()->SpawnActor(AirWallClass,&LLocation, &Rotation));
+	WallRight = Cast<ACHTAirWall>(GetWorld()->SpawnActor(AirWallClass, &RLocation, &Rotation));
 }
 void ACHTPlayerController::CHTRespawn()
 {
 	if (auto CHTGameInstance = Cast<UCHTGameInstance>(GetGameInstance())) {
 		APawn* NewPawn = CHTGameInstance->ResetToCheckpoint();
 		Possess(NewPawn);
-		SetCameraToPawn();
+		InitCameraAndWall();
 	}
 }
