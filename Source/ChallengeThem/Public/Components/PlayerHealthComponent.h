@@ -13,7 +13,9 @@ class CHALLENGETHEM_API UPlayerHealthComponent : public UActorComponent
 	GENERATED_BODY()
 public:	
 	UPlayerHealthComponent();
+	UFUNCTION()
 	void TakeDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+	UFUNCTION()
 	void TakeHealing(float  Amount);
 	float GetHealth() const;
 	UPROPERTY(BlueprintAssignable)
