@@ -16,6 +16,8 @@ void UPlayerHealthComponent::TakeDamage(AActor* DamagedActor, float Damage,const
 	Health = FMath::Clamp<float>(Health - Damage, 0.0f, DefaultHealth);
 	if (Health == 0)
 		OnPlayerDead.Broadcast();
+	else
+		OnPlayerHurt.Broadcast();
 }
 void UPlayerHealthComponent::TakeHealing(float Amount) {
 	if (Health == 0) return;

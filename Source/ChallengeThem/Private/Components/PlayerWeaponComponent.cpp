@@ -12,11 +12,15 @@ void UPlayerWeaponComponent::BeginPlay() {
 }
 void UPlayerWeaponComponent::SetWeaponTransform(FVector2D Direction) {
 	
-	SetRelativeLocation(FVector(Direction.X * HandDistance, 2, -Direction.Y * HandDistance));
+
+	float Up = -1;
 	float Radians = FMath::Acos(Direction.X);	
-	if (Direction.Y > 0)
+	if (Direction.Y > 0) {
 		Radians = 2 * FMath::Acos(-1) - Radians;
-	float Degree = FMath::RadiansToDegrees(Radians);
+		Up = 1;
+	}
+	float Degree = FMath::RadiansToDegrees(Radians);	
+	SetRelativeLocation(FVector(Direction.X * HandDistance, Up, -Direction.Y * HandDistance));
 	SetRelativeRotation(FRotator(Degree, 0, 0));
 
 }

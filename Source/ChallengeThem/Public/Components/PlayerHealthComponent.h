@@ -7,6 +7,7 @@
 #include "PlayerHealthComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerDeadSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerHurtSignature);
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class CHALLENGETHEM_API UPlayerHealthComponent : public UActorComponent
 {
@@ -20,6 +21,8 @@ public:
 	float GetHealth() const;
 	UPROPERTY(BlueprintAssignable)
 		FPlayerDeadSignature OnPlayerDead;
+	UPROPERTY(BlueprintAssignable)
+		FPlayerHurtSignature OnPlayerHurt;
 protected:
 	virtual void BeginPlay() override;
 	UPROPERTY(EditDefaultsOnly, Category = Health)

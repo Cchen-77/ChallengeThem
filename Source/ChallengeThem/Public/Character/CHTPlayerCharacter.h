@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Character/TopDownCharacter.h"
+#include"Components/TimelineComponent.h"
 #include"InputActionValue.h"
 #include"GameBase/CHTResetInterface.h"
 #include "CHTPlayerCharacter.generated.h"
@@ -11,11 +12,14 @@
 /**
  * 
  */
+class UPaperZDAnimationComponent;
 class UPlayerHealthComponent;
 class UBoxComponent;
 class UInputMappingContext;
 class UInputAction;
 class UPlayerWeaponComponent;
+class UPaperFlipbookComponent;
+class UCurveFloat;
 UCLASS()
 class CHALLENGETHEM_API ACHTPlayerCharacter : public ATopDownCharacter, public ICHTResetInterface
 {
@@ -24,6 +28,8 @@ public:
 	ACHTPlayerCharacter();
 	virtual void Tick(float DeltaTime) override;
 	virtual void Reset() override;
+	UFUNCTION()
+		void CheckWeaponCollsion();
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -33,21 +39,74 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 		UInputAction* IA_MouseMove;
 	UPROPERTY(EditDefaultsOnly, Category = Input)
-		UInputAction* IA_Attack;
+		UInputAction* IA_Stab;
+	UPROPERTY(EditDefaultsOnly, Category = Input)
+		UInputAction* IA_Splash;
+	UPROPERTY(EditDefaultsOnly, Category = Input)
+		UInputAction* IA_Flash;
 	UFUNCTION()
 		virtual void OnMouseMove(const FInputActionValue& value);
+
+	UFUNCTION(BlueprintCallable)
+		virtual void OnStab(const FInputActionValue& value);
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Actions)
+	bool IsStabbing = false;
+	UFUNCTION(BlueprintCallable)
+		virtual void OnStabFinish();
+
+	UFUNCTION(BlueprintCallable)
+		virtual void OnSplash(const FInputActionValue& value);
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Actions)
+	bool IsSplashing = false;
+	UFUNCTION(BlueprintCallable)
+		virtual void OnSplashFinish();
+
+	UFUNCTION(BlueprintCallable)
+		virtual void OnFlash(const FInputActionValue& value);
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Actions)
+	bool IsFlashing = false;
+	FTimeline InFlashingTimeline;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Flash)
+		UCurveFloat* InFlashingCurve;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Flash)
+		float FlashSpeed = 1000.0f;
+	FVector FlashingDirection;
 	UFUNCTION()
-		virtual void OnAttack(const FInputActionValue& value);
+		virtual void InFlashing(float value);
+	UFUNCTION(BlueprintCallable)
+		virtual void OnFlashFinish();
+
+	
 	virtual void OnMove(const FInputActionValue& value) override;
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
+		virtual void OnHurt();
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Actions)
+	bool IsHurting = false;
+	UFUNCTION(BlueprintCallable)
+		virtual void OnHurtFinish();
+
+	UFUNCTION(BlueprintCallable)
 		virtual void OnDead();
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,Category = Actions)
+	bool IsDead = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components)
 		UPlayerWeaponComponent* PlayerWeaponComponent;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components)
 		UBoxComponent* WeaponCollision;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components)
+		UPaperZDAnimationComponent* WeaponAnim;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components)
+		UPaperFlipbookComponent* HandLayer;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components)
 		UPlayerHealthComponent* PlayerHealthComponent;
+	
 	void SetWeaponTransform();
 	void SetCursorPosition();
+	void SetFaceDirection(bool FaceLeft);
+	FVector2D Direction;
+
+	UFUNCTION(BlueprintCallable)
+	void Play2DMontage(FName MontageName);
 };
