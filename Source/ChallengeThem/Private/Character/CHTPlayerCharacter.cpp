@@ -28,6 +28,7 @@ ACHTPlayerCharacter::ACHTPlayerCharacter() {
 	WeaponCollision->SetupAttachment(PlayerWeaponComponent);
 	PlayerHealthComponent = CreateDefaultSubobject<UPlayerHealthComponent>("PlayerHealthComponent");
 	WeaponAnim = CreateDefaultSubobject<UPaperZDAnimationComponent>("WeaponAnim");
+	WeaponAnim->InitRenderComponent(PlayerWeaponComponent);
 }
 void ACHTPlayerCharacter::BeginPlay() {
 	Super::BeginPlay();
@@ -72,33 +73,38 @@ void ACHTPlayerCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 	}
 }
 void ACHTPlayerCharacter::OnMouseMove(const FInputActionValue& value) {
-	SetWeaponTransform();
 	SetCursorPosition();
+	SetWeaponTransform();
 }
 
 void ACHTPlayerCharacter::OnMove(const FInputActionValue& value)
 {
+	if (IsHurting || IsDead) return;
 	Super::OnMove(value);
 	SetWeaponTransform();
 }
 
 void ACHTPlayerCharacter::OnStab(const FInputActionValue& value) {
-	
+	if (IsStabbing || IsSplashing || IsHurting || IsDead) return;
+	IsStabbing = true;
+	Play2DMontage(1, "JumpToStab");
 }
 void ACHTPlayerCharacter::OnStabFinish() {
-
+	IsStabbing = false;
 }
 
 void ACHTPlayerCharacter::OnSplash(const FInputActionValue& value) {
-
+	if (IsStabbing || IsSplashing||IsHurting||IsDead) return;
+	IsSplashing = true;
+	Play2DMontage(1, "JumpToSplash");
 }
 void ACHTPlayerCharacter::OnSplashFinish() {
-
+	IsSplashing = false;
 }
 void ACHTPlayerCharacter::OnFlash(const FInputActionValue& value) {
-	if (IsFlashing) return;
+	if (IsFlashing||IsDead||IsHurting) return;
 	IsFlashing = true;
-	Play2DMontage("JumpToFlash");
+	Play2DMontage(0,"JumpToFlash");
 	FlashingDirection = FVector(Direction.X, Direction.Y, 0);
 	InFlashingTimeline.PlayFromStart();
 }
@@ -108,18 +114,35 @@ void ACHTPlayerCharacter::InFlashing(float value){
 void ACHTPlayerCharacter::OnFlashFinish() {
 	IsFlashing = false;
 }
-
 void ACHTPlayerCharacter::OnHurt() {
-
+	if (IsDead) return;
+	IsHurting = true;
+	Play2DMontage(0, "JumpToHurt");
+	Play2DMontage(1, "JumpToHurt");
 }
 void ACHTPlayerCharacter::OnHurtFinish() {
-
+	IsHurting = false;
 }
-
 void ACHTPlayerCharacter::OnDead() {
-
+	IsDead = true;
+	Play2DMontage(0, "JumpToDead");
+	Play2DMontage(1, "JumpToDead");
+	if (auto PC = Cast<ACHTPlayerController>(GetController())) {
+		GetWorld()->GetTimerManager().SetTimer(OnDeadTimer, PC, &ACHTPlayerController::CHTRespawn, 1);
+		DisableInput(PC);
+	}
 }
-void ACHTPlayerCharacter::CheckWeaponCollsion() {
+void ACHTPlayerCharacter::CheckWeaponCollision(int Mode) {
+	if (Mode == 0) {
+		WeaponCollision->SetBoxExtent(FVector(13, 5, 3));
+		WeaponCollision->SetRelativeLocation(FVector(5, 0, -1));
+		WeaponCollision->SetRelativeRotation(FRotator(-40, 0, 0));
+	}
+	if (Mode == 1) {
+		WeaponCollision->SetBoxExtent(FVector(6, 5, 17));
+		WeaponCollision->SetRelativeLocation(FVector(4, 0, -2));
+		WeaponCollision->SetRelativeRotation(FRotator(4, 0, 0));
+	}
 	TArray<UPrimitiveComponent*> OverlappingComponents;
 	WeaponCollision->GetOverlappingComponents(OverlappingComponents);
 	for (auto TheComponent : OverlappingComponents) {
@@ -167,9 +190,16 @@ void ACHTPlayerCharacter::SetCursorPosition()
 	}
 }
 
-void ACHTPlayerCharacter::Play2DMontage(FName MontageName)
+void ACHTPlayerCharacter::Play2DMontage(int idx,FName MontageName)
 {
-	if (auto CHTAnimInstance = GetAnimationComponent()->GetAnimInstance()) {
-		CHTAnimInstance->JumpToNode(MontageName, "Montage");
+	if (idx == 0) {
+		if (auto CHTAnimInstance = GetAnimationComponent()->GetAnimInstance()) {
+			CHTAnimInstance->JumpToNode(MontageName, "Montage");
+		}
+	}
+	if (idx == 1) {
+		if (auto WeaponAnimInstance = WeaponAnim->GetAnimInstance()) {
+			WeaponAnimInstance->JumpToNode(MontageName, "Montage");
+		}
 	}
 }

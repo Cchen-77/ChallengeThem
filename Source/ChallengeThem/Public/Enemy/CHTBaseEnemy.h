@@ -54,4 +54,27 @@ protected:
 		ACHTBaseEnemyWeakpoint* Weakpoint_4;
 	ACHTBaseEnemyWeakpoint* SpawnWeakpoint(int WeakpointIndex,bool HavWeakpoint);
 	int WeakpointCount = 0;
+
+	UFUNCTION(BlueprintCallable)
+		void OnAttack();
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Actions)
+		bool IsAttacking = false;
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+		void InAttacking();
+	UFUNCTION(BlueprintCallable)
+		void OnAttackFinish();
+
+	UFUNCTION(BlueprintCallable)
+		void OnHurt();
+	UFUNCTION(BlueprintCallable)
+		void OnHurtFinish();
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Actions)
+		bool IsHurting = false;
+
+	UFUNCTION(BlueprintCallable)
+		void OnDead();
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Actions)
+		bool IsDead = false;
+
+	void Play2DMontage(FName MontageName);
 };

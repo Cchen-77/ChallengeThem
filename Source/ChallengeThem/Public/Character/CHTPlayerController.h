@@ -20,6 +20,8 @@ public:
 	virtual void Tick(float DeltaTime) override;	
 	UFUNCTION(BlueprintCallable)
 		void InitCameraAndWall();
+	UFUNCTION(BlueprintCallable)
+	void CHTRespawn();
 protected:
 	virtual void BeginPlay() override;
 	virtual void CameraFollow(float DeltaTime) override;
@@ -34,6 +36,4 @@ protected:
 		ACHTAirWall* WallLeft;
 	UPROPERTY()
 		ACHTAirWall* WallRight;
-	UFUNCTION(BlueprintCallable)
-	void CHTRespawn();
 };

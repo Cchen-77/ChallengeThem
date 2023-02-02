@@ -8,7 +8,11 @@
 #include"PaperFlipbookComponent.h"
 #include"GameBase/CHTGameInstance.h"
 #include"Kismet/KismetSystemLibrary.h"
+#include"PaperZDAnimationComponent.h"
+#include"PaperZDAnimInstance.h"
+#include"AIController.h"
 ACHTBaseEnemy::ACHTBaseEnemy() {
+	bUseControllerRotationPitch = bUseControllerRotationRoll = bUseControllerRotationYaw = false;
 	AIControllerClass = ACHTBaseEnemyController::StaticClass();
 	WeakpointLayer = CreateDefaultSubobject<UPaperFlipbookComponent>("WeakpointLayer");
 	WeakpointLayer->SetupAttachment(GetSprite());
@@ -17,9 +21,19 @@ ACHTBaseEnemy::ACHTBaseEnemy() {
 void ACHTBaseEnemy::BeginPlay() {
 	Super::BeginPlay();
 	SpawnWeakpoints();
+	if (auto AC = Cast<AAIController>(GetController())) {
+		AC->SetFocus(UGameplayStatics::GetPlayerPawn(GetWorld(),0));
+	}
 }
 void ACHTBaseEnemy::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
+	float Yaw = GetControlRotation().Yaw;
+	if (Yaw > 90 && Yaw < 270) {
+		GetSprite()->SetWorldScale3D(FVector(-1,1,1));
+	}
+	else {
+		GetSprite()->SetWorldScale3D(FVector(1, 1, 1));
+	}
 }
 void ACHTBaseEnemy::Reset() {
 	Destroy();
@@ -58,6 +72,31 @@ ACHTBaseEnemyWeakpoint* ACHTBaseEnemy::SpawnWeakpoint(int WeakpointIndex,bool Ha
 	Weakpoint->AttachToComponent(WeakpointLayer, FAttachmentTransformRules::SnapToTargetIncludingScale, WeakpointSocket);
 	return Weakpoint;
 }
+void ACHTBaseEnemy::OnAttack() {
+	if (IsHurting || IsDead) return;
+	IsAttacking = true;
+	Play2DMontage("JumpToAttack");
+}
+void ACHTBaseEnemy::OnAttackFinish() {
+	IsAttacking = false;
+}
+void ACHTBaseEnemy::OnHurt()
+{
+	IsHurting = true;
+	Play2DMontage("JumpToHurt");
+}
+void ACHTBaseEnemy::OnHurtFinish()
+{
+	IsHurting = false;
+}
+void ACHTBaseEnemy::OnDead() {
+	
+	Play2DMontage("JumpToDead");
+	if (auto EnemyController = Cast<ACHTBaseEnemyController>(GetController())) {
+		EnemyController->OnEnemyDead();
+	}
+	SetLifeSpan(1.0f);
+}
 void ACHTBaseEnemy::OnWeakpointBreak(int WeakpointIndex) {
 	switch (WeakpointIndex) {
 		case 1:
@@ -77,10 +116,10 @@ void ACHTBaseEnemy::OnWeakpointBreak(int WeakpointIndex) {
 	//For test
 	if (WeakpointCount == 0)
 	{
-		Destroy();
-		if (auto EnemyController = Cast<ACHTBaseEnemyController>(GetController())) {
-			EnemyController->OnEnemyDead();
-		}
+		OnDead();
+	}
+	else {
+		OnHurt();
 	}
 }
 void ACHTBaseEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason){
@@ -98,4 +137,9 @@ void ACHTBaseEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason){
 		Weakpoint_4->Destroy();
 	}
 	Super::EndPlay(EndPlayReason);
+}
+void ACHTBaseEnemy::Play2DMontage(FName MontageName) {
+	if (auto CHTAnimInstance = GetAnimationComponent()->GetAnimInstance()) {
+		CHTAnimInstance->JumpToNode(MontageName, "Montage");
+	}
 }

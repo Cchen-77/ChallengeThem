@@ -28,8 +28,8 @@ public:
 	ACHTPlayerCharacter();
 	virtual void Tick(float DeltaTime) override;
 	virtual void Reset() override;
-	UFUNCTION()
-		void CheckWeaponCollsion();
+	UFUNCTION(BlueprintCallable)
+		void CheckWeaponCollision(int Mode);
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -87,8 +87,10 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 		virtual void OnDead();
+	FTimerHandle OnDeadTimer;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,Category = Actions)
 	bool IsDead = false;
+
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components)
 		UPlayerWeaponComponent* PlayerWeaponComponent;
@@ -108,5 +110,5 @@ protected:
 	FVector2D Direction;
 
 	UFUNCTION(BlueprintCallable)
-	void Play2DMontage(FName MontageName);
+	void Play2DMontage(int idx,FName MontageName);
 };

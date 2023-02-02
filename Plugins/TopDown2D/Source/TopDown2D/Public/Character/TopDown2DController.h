@@ -31,6 +31,8 @@ protected:
 		float CameraLagSpeed = 8.0f;
 	UPROPERTY(EditDefaultsOnly, Category = Camera)
 		bool IsCameraPerspective = true;
+	UPROPERTY(EditDefaultsOnly, Category = Camera)
+		float CameraOrthoWidth = 100.0f;
 	virtual void CameraFollow(float DeltaTime);	
 	UPROPERTY()
 		ACameraActor* TopDownCamera;

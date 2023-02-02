@@ -26,6 +26,7 @@ void ATopDown2DController::BeginPlay()
 	}
 	else {
 		TopDownCamera->GetCameraComponent()->SetProjectionMode(ECameraProjectionMode::Orthographic);
+		TopDownCamera->GetCameraComponent()->SetOrthoWidth(CameraOrthoWidth);
 	}
 	TopDownCamera->GetCameraComponent()->bConstrainAspectRatio = false;
 	SetViewTarget(TopDownCamera);

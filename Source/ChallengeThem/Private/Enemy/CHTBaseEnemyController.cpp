@@ -3,6 +3,7 @@
 
 #include "Enemy/CHTBaseEnemyController.h"
 #include"Enemy/CHTBaseEnemy.h"
+#include"BrainComponent.h"
 ACHTBaseEnemyController::ACHTBaseEnemyController() {
 
 }
@@ -15,5 +16,7 @@ void ACHTBaseEnemyController::OnPossess(APawn* InPawn) {
 	}
 }
 void ACHTBaseEnemyController::OnEnemyDead() {
-
+	if (auto Brain = GetBrainComponent()) {
+		Brain->Cleanup();
+	}
 }
