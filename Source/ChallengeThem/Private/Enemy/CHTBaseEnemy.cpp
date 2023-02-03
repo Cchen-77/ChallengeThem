@@ -5,11 +5,13 @@
 #include"Enemy/CHTBaseEnemyController.h"
 #include"Enemy/CHTBaseEnemyWeakpoint.h"
 #include"Kismet/GameplayStatics.h"
+#include"Components/BoxComponent.h"
 #include"PaperFlipbookComponent.h"
 #include"GameBase/CHTGameInstance.h"
 #include"Kismet/KismetSystemLibrary.h"
 #include"PaperZDAnimationComponent.h"
 #include"PaperZDAnimInstance.h"
+#include"PaperFlipbookComponent.h"
 #include"AIController.h"
 ACHTBaseEnemy::ACHTBaseEnemy() {
 	bUseControllerRotationPitch = bUseControllerRotationRoll = bUseControllerRotationYaw = false;
@@ -17,6 +19,12 @@ ACHTBaseEnemy::ACHTBaseEnemy() {
 	WeakpointLayer = CreateDefaultSubobject<UPaperFlipbookComponent>("WeakpointLayer");
 	WeakpointLayer->SetupAttachment(GetSprite());
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+	AttackFXSprite = CreateDefaultSubobject<UPaperFlipbookComponent>("AttackFXSprite");
+	AttackFXSprite->SetupAttachment(GetRootComponent());
+	AttackCollision = CreateDefaultSubobject<UBoxComponent>("AttackCollision");
+	AttackCollision->SetupAttachment(AttackFXSprite);
+	AttackFXAnim = CreateDefaultSubobject<UPaperZDAnimationComponent>("AttackFXAnim");
+	AttackFXAnim->InitRenderComponent(AttackFXSprite);
 }
 void ACHTBaseEnemy::BeginPlay() {
 	Super::BeginPlay();
@@ -27,12 +35,34 @@ void ACHTBaseEnemy::BeginPlay() {
 }
 void ACHTBaseEnemy::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
+	if (IsAttacking || IsHurting || IsDead) return;
 	float Yaw = GetControlRotation().Yaw;
+	while (Yaw < 0 || Yaw>=360) {
+		if (Yaw >= 360) Yaw -= 360;
+		else Yaw += 360;
+	}
 	if (Yaw > 90 && Yaw < 270) {
-		GetSprite()->SetWorldScale3D(FVector(-1,1,1));
+		GetSprite()->SetRelativeScale3D(FVector(-1,1,1));
+		FVector OldFXScale = AttackFXSprite->GetRelativeScale3D();
+		FVector OldFXLocation = AttackFXSprite->GetRelativeLocation();
+		if (OldFXScale.X >= 0) {
+			OldFXScale.X = -OldFXScale.X;
+			OldFXLocation.X = -OldFXLocation.X;
+			AttackFXSprite->SetRelativeScale3D(OldFXScale);
+			AttackFXSprite->SetRelativeLocation(OldFXLocation);
+		}
 	}
 	else {
-		GetSprite()->SetWorldScale3D(FVector(1, 1, 1));
+		GetSprite()->SetRelativeScale3D(FVector(1, 1, 1));
+		FVector OldFXScale = AttackFXSprite->GetRelativeScale3D();
+		FVector OldFXLocation = AttackFXSprite->GetRelativeLocation();
+		if (OldFXScale.X < 0) {
+			OldFXScale.X = -OldFXScale.X;
+			OldFXLocation.X = -OldFXLocation.X;
+			AttackFXSprite->SetRelativeScale3D(OldFXScale);
+			AttackFXSprite->SetRelativeLocation(OldFXLocation);
+		}
+
 	}
 }
 void ACHTBaseEnemy::Reset() {
@@ -76,6 +106,21 @@ void ACHTBaseEnemy::OnAttack() {
 	if (IsHurting || IsDead) return;
 	IsAttacking = true;
 	Play2DMontage("JumpToAttack");
+	if (auto CHTAnimInstance = AttackFXAnim->GetAnimInstance()) {
+		CHTAnimInstance->JumpToNode("JumpToShowFX", "Montage");
+	}
+}
+void ACHTBaseEnemy::CheckAttack() {
+	TArray<AActor*> OverlappingActors;
+	AttackCollision->GetOverlappingActors(OverlappingActors);
+	if (AActor* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)) {
+		for (auto OverlappingActor:OverlappingActors) {
+			if (OverlappingActor == PlayerPawn)
+			{
+				UGameplayStatics::ApplyDamage(PlayerPawn, 1, GetController(), this, UDamageType::StaticClass());
+			}
+		}
+	}
 }
 void ACHTBaseEnemy::OnAttackFinish() {
 	IsAttacking = false;
@@ -96,6 +141,7 @@ void ACHTBaseEnemy::OnDead() {
 		EnemyController->OnEnemyDead();
 	}
 	SetLifeSpan(1.0f);
+	OnEnemyDead.Broadcast();
 }
 void ACHTBaseEnemy::OnWeakpointBreak(int WeakpointIndex) {
 	switch (WeakpointIndex) {

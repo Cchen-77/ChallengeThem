@@ -117,6 +117,7 @@ void ACHTPlayerCharacter::OnFlashFinish() {
 void ACHTPlayerCharacter::OnHurt() {
 	if (IsDead) return;
 	IsHurting = true;
+	IsStabbing = IsSplashing = IsFlashing = false;
 	Play2DMontage(0, "JumpToHurt");
 	Play2DMontage(1, "JumpToHurt");
 }
@@ -134,9 +135,9 @@ void ACHTPlayerCharacter::OnDead() {
 }
 void ACHTPlayerCharacter::CheckWeaponCollision(int Mode) {
 	if (Mode == 0) {
-		WeaponCollision->SetBoxExtent(FVector(13, 5, 3));
-		WeaponCollision->SetRelativeLocation(FVector(5, 0, -1));
-		WeaponCollision->SetRelativeRotation(FRotator(-40, 0, 0));
+		WeaponCollision->SetBoxExtent(FVector(16, 5, 3));
+		WeaponCollision->SetRelativeLocation(FVector(10, 0, 2));
+		WeaponCollision->SetRelativeRotation(FRotator(40, 0, 0));
 	}
 	if (Mode == 1) {
 		WeaponCollision->SetBoxExtent(FVector(6, 5, 17));
@@ -155,12 +156,12 @@ void ACHTPlayerCharacter::CheckWeaponCollision(int Mode) {
 void ACHTPlayerCharacter::SetFaceDirection(bool FaceLeft) {
 
 	if (!FaceLeft) {
-		GetSprite()->SetWorldScale3D(FVector(-1, 1, 1));
-		PlayerWeaponComponent->SetWorldScale3D(FVector(1, 1, -1));
+		GetSprite()->SetRelativeScale3D(FVector(-1, 1, 1));
+		PlayerWeaponComponent->SetRelativeScale3D(FVector(1, 1, -1));
 	}
 	else {
-		GetSprite()->SetWorldScale3D(FVector(1, 1, 1));
-		PlayerWeaponComponent->SetWorldScale3D(FVector(1, 1, 1));
+		GetSprite()->SetRelativeScale3D(FVector(1, 1, 1));
+		PlayerWeaponComponent->SetRelativeScale3D(FVector(1, 1, 1));
 	}
 }
 void ACHTPlayerCharacter::SetWeaponTransform()

@@ -10,9 +10,12 @@
 /**
  * 
  */
+DECLARE_MULTICAST_DELEGATE(FOnEnemyDeadSignature);
+class UBoxComponent;
 class ACHTBaseEnemyWeakpoint;
 class UPaperFlipbookComponet;
 class UBehaviorTree;
+class UPaperZDAnimationComponent;
 UCLASS()
 class CHALLENGETHEM_API ACHTBaseEnemy : public ATopDownCharacter,public ICHTResetInterface
 {
@@ -28,8 +31,17 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = AI)
 		UBehaviorTree* BehaviorTreeAsset;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	UFUNCTION(BlueprintCallable)
+		void OnAttack();
+	FOnEnemyDeadSignature OnEnemyDead;
 protected:
 	virtual void BeginPlay() override;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components)
+		UBoxComponent* AttackCollision;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components)
+		UPaperFlipbookComponent* AttackFXSprite;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components)
+		UPaperZDAnimationComponent* AttackFXAnim;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Weakpoint)
 		UPaperFlipbookComponent* WeakpointLayer;
 	UPROPERTY(EditDefaultsOnly, Category = Weakpoint)
@@ -55,12 +67,10 @@ protected:
 	ACHTBaseEnemyWeakpoint* SpawnWeakpoint(int WeakpointIndex,bool HavWeakpoint);
 	int WeakpointCount = 0;
 
-	UFUNCTION(BlueprintCallable)
-		void OnAttack();
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Actions)
 		bool IsAttacking = false;
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
-		void InAttacking();
+	UFUNCTION(BlueprintCallable)
+		void CheckAttack();
 	UFUNCTION(BlueprintCallable)
 		void OnAttackFinish();
 
@@ -75,6 +85,7 @@ protected:
 		void OnDead();
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Actions)
 		bool IsDead = false;
+	
 
 	void Play2DMontage(FName MontageName);
 };

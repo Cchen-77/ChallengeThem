@@ -27,7 +27,7 @@ public:
 	virtual void Reset() override;
 protected:
 	virtual void BeginPlay() override;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Enemys)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Enemys)
 		TArray<FEnemyInfo> EnemyInfos;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Enemys)
 		UBoxComponent* SpawnerCollision;
@@ -37,4 +37,7 @@ protected:
 			UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
 	UFUNCTION()
 		void StartSpawn();
+	int EnemyCounter = 0;
+	void OnEnemyDead();
+	void OnAllEnemyDead();
 };
