@@ -7,6 +7,12 @@
 #include"GameBase/CHTGameStateBase.h"
 #include"Kismet/GameplayStatics.h"
 #include"GameBase/CHTResetInterface.h"
+#include"GameFramework/GameUserSettings.h"
+void UCHTGameInstance::Init() {
+	Super::Init();
+	GEngine->GetGameUserSettings()->SetScreenResolution(FIntPoint(1920, 1080));
+	GEngine->GetGameUserSettings()->SetFullscreenMode(EWindowMode::Fullscreen);
+}
 APawn* UCHTGameInstance::ResetToCheckpoint()
 {
 	TArray<AActor*> OutActors;

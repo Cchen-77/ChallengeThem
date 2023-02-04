@@ -17,4 +17,6 @@ class CHALLENGETHEM_API UCHTGameInstance : public UGameInstance
 	GENERATED_BODY()
 public:
 	APawn* ResetToCheckpoint();
+protected:
+	virtual void Init();
 };

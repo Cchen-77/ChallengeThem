@@ -7,6 +7,7 @@
 #include"Camera/CameraActor.h"
 #include"GameBase/CHTGameInstance.h"
 #include"GameBase/CHTGameStateBase.h"
+#include"GameBase/CHTHUD.h"
 #include"Kismet/KismetSystemLibrary.h"
 #include"GameBase/CHTAirWall.h"
 ACHTPlayerController::ACHTPlayerController() {
@@ -17,6 +18,10 @@ void ACHTPlayerController::BeginPlay() {
 	SetInputMode(FInputModeGameOnly());
 	UWidgetBlueprintLibrary::SetFocusToGameViewport();
 	InitCameraAndWall();
+	if (auto CHTHUD = Cast<ACHTHUD>(GetHUD())) {
+		CHTHUD->ShowCursorLocatorWidget();
+		CHTHUD->ShowPlayerHealthWidget();
+	}
 }
 void ACHTPlayerController::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
@@ -76,9 +81,22 @@ void ACHTPlayerController::InitCameraAndWall() {
 }
 void ACHTPlayerController::CHTRespawn()
 {
+	if (auto CHTHUD = Cast<ACHTHUD>(GetHUD())) {
+		CHTHUD->ShowRestartWidget();
+	}
+	GetWorld()->GetTimerManager().SetTimer(ResetTimer, this, &ACHTPlayerController::OnReset, 0.5);
+}
+void ACHTPlayerController::OnReset() {
+
 	if (auto CHTGameInstance = Cast<UCHTGameInstance>(GetGameInstance())) {
 		APawn* NewPawn = CHTGameInstance->ResetToCheckpoint();
 		Possess(NewPawn);
 		InitCameraAndWall();
+		CameraLocked = true;
+	}
+}
+void ACHTPlayerController::OnEsc() {
+	if (auto CHTHUD = Cast<ACHTHUD>(GetHUD())) {
+		CHTHUD->ShowEscMenuWidget();
 	}
 }

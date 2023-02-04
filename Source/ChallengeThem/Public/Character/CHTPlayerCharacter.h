@@ -44,6 +44,8 @@ protected:
 		UInputAction* IA_Splash;
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 		UInputAction* IA_Flash;
+	UPROPERTY(EditDefaultsOnly, Category = Input)
+		UInputAction* IA_Esc;
 	UFUNCTION()
 		virtual void OnMouseMove(const FInputActionValue& value);
 
@@ -91,6 +93,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,Category = Actions)
 	bool IsDead = false;
 
+	UFUNCTION()
+		void OnEsc();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components)
 		UPlayerWeaponComponent* PlayerWeaponComponent;

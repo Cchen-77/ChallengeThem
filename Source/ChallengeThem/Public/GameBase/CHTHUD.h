@@ -10,6 +10,10 @@
  * 
  */
 class UCursorLocatorWidget;
+class UPlayerHealthWidget;
+class UOpenMenuWidget;
+class UEscMenuWidget;
+class URestartWidget;
 UCLASS()
 class CHALLENGETHEM_API ACHTHUD : public AHUD
 {
@@ -18,11 +22,44 @@ public:
 	ACHTHUD();
 	UFUNCTION()
 		virtual void SetCursorPosition(float X, float Y);
+	UFUNCTION(BlueprintCallable)
+		void ShowCursorLocatorWidget();
+	UFUNCTION(BlueprintCallable)
+		void ShowPlayerHealthWidget();
+	UFUNCTION(BlueprintCallable)
+		void ShowOpenMenuWidget();
+	UFUNCTION(BlueprintCallable)
+		void ShowEscMenuWidget();
+	UFUNCTION(BlueprintCallable)
+		void ShowRestartWidget();
+	UFUNCTION(BlueprintCallable)
+		void RemoveEscMenuWidget();
 protected:
 	virtual void BeginPlay() override;
 	UPROPERTY(EditDefaultsOnly, Category = Widgets)
 		TSubclassOf<UCursorLocatorWidget> CursorLocatorWidgetClass;
 	UPROPERTY()
 		UCursorLocatorWidget* CursorLocatorWidget;
+
+	UPROPERTY(EditDefaultsOnly, Category = Widgets)
+		TSubclassOf<UPlayerHealthWidget> PlayerHealthWidgetClass;
+	UPROPERTY()
+		UPlayerHealthWidget* PlayerHealthWidget;
+
+	UPROPERTY(EditDefaultsOnly, Category = Widgets)
+		TSubclassOf<UOpenMenuWidget> OpenMenuWidgetClass;
+	UPROPERTY()
+		UOpenMenuWidget* OpenMenuWidget;
+
+	UPROPERTY(EditDefaultsOnly, Category = Widgets)
+		TSubclassOf<UEscMenuWidget> EscMenuWidgetClass;
+	UPROPERTY()
+		UEscMenuWidget* EscMenuWidget;
+
+	UPROPERTY(EditDefaultsOnly, Category = Widgets)
+		TSubclassOf<URestartWidget> RestartWidgetClass;
+	UPROPERTY()
+		URestartWidget* RestartWidget;
+
 
 };

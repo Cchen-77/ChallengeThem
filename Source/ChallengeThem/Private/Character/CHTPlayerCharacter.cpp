@@ -69,6 +69,8 @@ void ACHTPlayerCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 			EnhancedInput->BindAction(IA_Splash, ETriggerEvent::Triggered, this, &ACHTPlayerCharacter::OnSplash);
 		if (IA_Flash)
 			EnhancedInput->BindAction(IA_Flash, ETriggerEvent::Triggered, this, &ACHTPlayerCharacter::OnFlash);
+		if (IA_Esc)
+			EnhancedInput->BindAction(IA_Esc, ETriggerEvent::Triggered, this, &ACHTPlayerCharacter::OnEsc);
 
 	}
 }
@@ -131,6 +133,11 @@ void ACHTPlayerCharacter::OnDead() {
 	if (auto PC = Cast<ACHTPlayerController>(GetController())) {
 		GetWorld()->GetTimerManager().SetTimer(OnDeadTimer, PC, &ACHTPlayerController::CHTRespawn, 1);
 		DisableInput(PC);
+	}
+}
+void ACHTPlayerCharacter::OnEsc() {
+	if (auto PC = Cast<ACHTPlayerController>(GetController())) {
+		PC->OnEsc();
 	}
 }
 void ACHTPlayerCharacter::CheckWeaponCollision(int Mode) {
