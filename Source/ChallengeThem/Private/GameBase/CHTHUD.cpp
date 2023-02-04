@@ -84,3 +84,11 @@ void ACHTHUD::ShowRestartWidget()
 		RestartWidget->AddToViewport();
 	}
 }
+void ACHTHUD::ShowCheckpointWidget() {
+	if (!CheckpointWidget) {
+		CheckpointWidget = CreateWidget<UUserWidget>(GetOwningPlayerController(), CheckpointWidgetClass);
+	}
+	if (CheckpointWidget) {
+		CheckpointWidget->AddToViewport();
+	}
+}

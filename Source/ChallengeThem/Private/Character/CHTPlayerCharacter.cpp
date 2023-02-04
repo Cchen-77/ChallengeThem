@@ -141,6 +141,7 @@ void ACHTPlayerCharacter::OnEsc() {
 	}
 }
 void ACHTPlayerCharacter::CheckWeaponCollision(int Mode) {
+	bool Hit = false;
 	if (Mode == 0) {
 		WeaponCollision->SetBoxExtent(FVector(16, 5, 3));
 		WeaponCollision->SetRelativeLocation(FVector(10, 0, 2));
@@ -157,8 +158,11 @@ void ACHTPlayerCharacter::CheckWeaponCollision(int Mode) {
 		if (TheComponent->IsA(UCHTWeakpointCollision::StaticClass())) {
 			auto WeakpointCollision = Cast<UCHTWeakpointCollision>(TheComponent);
 			WeakpointCollision->BeHit();
+			Hit = true;
 		}
 	}
+	if (Hit)
+		StartHitStop();
 }
 void ACHTPlayerCharacter::SetFaceDirection(bool FaceLeft) {
 
@@ -210,4 +214,13 @@ void ACHTPlayerCharacter::Play2DMontage(int idx,FName MontageName)
 			WeaponAnimInstance->JumpToNode(MontageName, "Montage");
 		}
 	}
+}
+
+void ACHTPlayerCharacter::StartHitStop()
+{
+	CustomTimeDilation = 0;
+	GetWorld()->GetTimerManager().SetTimer(HitStopTimer, this, &ACHTPlayerCharacter::HitStopEnd, HitStopDuration, false);
+}
+void ACHTPlayerCharacter::HitStopEnd() {
+	CustomTimeDilation = 1;
 }

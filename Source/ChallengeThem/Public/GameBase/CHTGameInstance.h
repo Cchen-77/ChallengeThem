@@ -19,4 +19,6 @@ public:
 	APawn* ResetToCheckpoint();
 protected:
 	virtual void Init();
+	UFUNCTION()
+	void StartLoadingScreen(const FString& MapName);
 };

@@ -115,4 +115,12 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void Play2DMontage(int idx,FName MontageName);
+
+	UFUNCTION(BlueprintCallable)
+		void StartHitStop();
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = HitStop)
+		float HitStopDuration = 0.1f;
+	FTimerHandle HitStopTimer;
+	UFUNCTION()
+		void HitStopEnd();
 };

@@ -9,7 +9,7 @@ public class ChallengeThem : ModuleRules
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore","PaperZD","Paper2D",
-			"EnhancedInput" ,"UMG","AIModule","GameplayTasks"});
+			"EnhancedInput" ,"UMG","AIModule","GameplayTasks","MoviePlayer"});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

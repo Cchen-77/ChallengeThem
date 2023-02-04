@@ -8,10 +8,21 @@
 #include"Kismet/GameplayStatics.h"
 #include"GameBase/CHTResetInterface.h"
 #include"GameFramework/GameUserSettings.h"
+#include"MoviePlayer.h"
 void UCHTGameInstance::Init() {
 	Super::Init();
 	GEngine->GetGameUserSettings()->SetScreenResolution(FIntPoint(1920, 1080));
 	GEngine->GetGameUserSettings()->SetFullscreenMode(EWindowMode::Fullscreen);
+	FCoreUObjectDelegates::PreLoadMap.AddUObject(this, &UCHTGameInstance::StartLoadingScreen);
+}
+void UCHTGameInstance::StartLoadingScreen(const FString& MapName)
+{
+	if (!IsRunningDedicatedServer()) {
+		FLoadingScreenAttributes LoadingScreenAttributes;
+		LoadingScreenAttributes.bAutoCompleteWhenLoadingCompletes = false;
+		LoadingScreenAttributes.WidgetLoadingScreen = FLoadingScreenAttributes::NewTestLoadingScreenWidget();
+		GetMoviePlayer()->SetupLoadingScreen(LoadingScreenAttributes);
+	}
 }
 APawn* UCHTGameInstance::ResetToCheckpoint()
 {

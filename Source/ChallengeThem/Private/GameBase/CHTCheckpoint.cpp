@@ -4,7 +4,9 @@
 #include "GameBase/CHTCheckpoint.h"
 #include"Components/BoxComponent.h"
 #include"Character/CHTPlayerCharacter.h"
+#include"Kismet/GameplayStatics.h"
 #include"GameBase/CHTGameStateBase.h"
+#include"GameBase/CHTHUD.h"
 ACHTCheckpoint::ACHTCheckpoint()
 {
  	
@@ -25,8 +27,11 @@ void ACHTCheckpoint::ActorOverlapCheckpoint(UPrimitiveComponent * OverlappedComp
 		Checked = true;
 		if (auto CHTGameState = Cast<ACHTGameStateBase>(GetWorld()->GetGameState())) {
 			CHTGameState->SetCheckpoint(this);
-			//test
-			UE_LOG(LogTemp, Display, TEXT("Checkpoint!"));
+		}
+		if (auto PC = UGameplayStatics::GetPlayerController(GetWorld(),0)) {
+			if (auto CHTHUD = Cast<ACHTHUD>(PC->GetHUD())) {
+				CHTHUD->ShowCheckpointWidget();
+			}
 		}
 	}
 }
