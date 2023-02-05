@@ -58,6 +58,12 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 		virtual void OnSplash(const FInputActionValue& value);
+	bool CanSplash = true;
+	FTimerHandle SplashCDTimer;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Actions)
+		float SplashCD = 5.0f;
+	UFUNCTION()
+		void ResetSplashCD();
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Actions)
 	bool IsSplashing = false;
 	UFUNCTION(BlueprintCallable)

@@ -14,6 +14,7 @@ class UPlayerHealthWidget;
 class UOpenMenuWidget;
 class UEscMenuWidget;
 class URestartWidget;
+class UDialogueWidget;
 UCLASS()
 class CHALLENGETHEM_API ACHTHUD : public AHUD
 {
@@ -38,6 +39,10 @@ public:
 		void ShowCheckpointWidget();
 	UFUNCTION(BlueprintCallable)
 		void ShowFinishWidget();
+	UFUNCTION(BlueprintCallable)
+		void ShowDialogueWidget(const TArray<FString>& Texts);
+	UFUNCTION(BlueprintCallable)
+		void RemoveDialogueWidget();
 protected:
 	virtual void BeginPlay() override;
 	UPROPERTY(EditDefaultsOnly, Category = Widgets)
@@ -74,4 +79,9 @@ protected:
 		TSubclassOf<UUserWidget> FinishWidgetClass;
 	UPROPERTY()
 		UUserWidget* FinishWidget;
+
+	UPROPERTY(EditDefaultsOnly, Category = Widgets)
+		TSubclassOf<UDialogueWidget> DialogueWidgetClass;
+	UPROPERTY()
+		UDialogueWidget* DialogueWidget;
 };

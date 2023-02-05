@@ -8,6 +8,7 @@
 #include"UI/OpenMenuWidget.h"
 #include"UI/EscMenuWidget.h"
 #include"UI/RestartWidget.h"
+#include"UI/DialogueWidget.h"
 #include"Blueprint/WidgetBlueprintLibrary.h"
 ACHTHUD::ACHTHUD() {
 
@@ -101,5 +102,26 @@ void ACHTHUD::ShowFinishWidget() {
 		GetOwningPlayerController()->SetInputMode(FInputModeUIOnly{});
 		GetOwningPlayerController()->bShowMouseCursor = true;
 		FinishWidget->SetFocus();
+	}
+}
+void ACHTHUD::ShowDialogueWidget(const TArray<FString>& Texts) {
+	if (!DialogueWidget) {
+		DialogueWidget = CreateWidget<UDialogueWidget>(GetOwningPlayerController(), DialogueWidgetClass);
+	}
+	if (DialogueWidget) {
+		DialogueWidget->InitTexts();
+		DialogueWidget->SetTexts(Texts);
+		DialogueWidget->AddToViewport();
+		GetOwningPlayerController()->SetInputMode(FInputModeUIOnly{});
+		DialogueWidget->SetFocus();
+
+	}
+}
+void ACHTHUD::RemoveDialogueWidget() {
+	if (DialogueWidget) {
+		DialogueWidget->RemoveFromParent();
+		GetOwningPlayerController()->SetInputMode(FInputModeGameOnly{});
+		GetOwningPlayerController()->bShowMouseCursor = false;
+		UWidgetBlueprintLibrary::SetFocusToGameViewport();
 	}
 }

@@ -5,3 +5,4 @@
 bool URandomBTDecorator::CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const {
 	return FMath::RandRange(0, 1) <= Posibility;
 }
+

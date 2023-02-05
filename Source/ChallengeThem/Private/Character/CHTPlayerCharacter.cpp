@@ -98,8 +98,14 @@ void ACHTPlayerCharacter::OnStabFinish() {
 
 void ACHTPlayerCharacter::OnSplash(const FInputActionValue& value) {
 	if (IsStabbing || IsSplashing||IsHurting||IsDead) return;
+	if (!CanSplash) return;
+	CanSplash = false;
+	GetWorld()->GetTimerManager().SetTimer(SplashCDTimer, this,&ACHTPlayerCharacter::ResetSplashCD,SplashCD);
 	IsSplashing = true;
 	Play2DMontage(1, "JumpToSplash");
+}
+void ACHTPlayerCharacter::ResetSplashCD() {
+	CanSplash = true;
 }
 void ACHTPlayerCharacter::OnSplashFinish() {
 	IsSplashing = false;

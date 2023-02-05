@@ -2,26 +2,37 @@
 
 
 #include "GameBase/DialogBox.h"
-
+#include"Components/BoxComponent.h"
+#include"Kismet/GameplayStatics.h"
+#include"Character/CHTPlayerController.h"
+#include"GameBase/CHTHUD.h"
 // Sets default values
 ADialogBox::ADialogBox()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
+	PrimaryActorTick.bCanEverTick = false;
+	Collision = CreateDefaultSubobject<UBoxComponent>("Collision");
+	SetRootComponent(Collision);
+	Texts.Empty();
 }
 
-// Called when the game starts or when spawned
 void ADialogBox::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	Collision->OnComponentBeginOverlap.AddDynamic(this, &ADialogBox::BeTouched);
 }
-
-// Called every frame
-void ADialogBox::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
+void ADialogBox::BeTouched(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult) {
+	if (Touched) return;
+	Touched = true;
+	if (OtherActor == UGameplayStatics::GetPlayerPawn(GetWorld(), 0)) {
+		if (auto PC = Cast<ACHTPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0))) {
+			if (auto CHTHUD = Cast<ACHTHUD>(PC->GetHUD())) {
+				CHTHUD->ShowDialogueWidget(Texts);
+			}
+		}
+	}
+}
+void ADialogBox::Reset() {
+	Touched = false;
 }
 
