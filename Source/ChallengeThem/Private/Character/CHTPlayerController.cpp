@@ -27,7 +27,6 @@ void ACHTPlayerController::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 }
 void ACHTPlayerController::CameraFollow(float DeltaTime) {
-	if (!CameraLocked) return;
 	if (CameraForLevel) {
 		if (auto TopDownCharacter = GetPawn()) {
 			if (GetTopDownCamera()) {
@@ -37,15 +36,17 @@ void ACHTPlayerController::CameraFollow(float DeltaTime) {
 				if (Dest.X < From.X) return;
 				Dest.Y = From.Y;
 				FVector Res = FMath::VInterpTo(From, Dest, DeltaTime, CameraLagSpeed);
-				if (IsCameraLag) {
-					GetTopDownCamera()->SetActorLocation(Res);
-				}
-				else {
-					GetTopDownCamera()->SetActorLocation(Dest);
+					if (IsCameraLag) {
+						if (!CameraLocked && Res.X > Cameramaxx) return;
+						GetTopDownCamera()->SetActorLocation(Res);
+					}
+					else {
+						if(!CameraLocked &&Dest.X > Cameramaxx) return;
+						GetTopDownCamera()->SetActorLocation(Dest);
+					}
 				}
 			}
 		}
-	}
 	else {
 		Super::CameraFollow(DeltaTime);
 	}
@@ -98,5 +99,20 @@ void ACHTPlayerController::OnReset() {
 void ACHTPlayerController::OnEsc() {
 	if (auto CHTHUD = Cast<ACHTHUD>(GetHUD())) {
 		CHTHUD->ShowEscMenuWidget();
+	}
+}
+void ACHTPlayerController::StartHitShake() {
+	if (HitShakeClass) {
+		PlayerCameraManager->StartCameraShake(HitShakeClass);
+	}
+	PlayerCameraManager->StartCameraFade(0.3, 0, 0.5, FLinearColor::Red);
+}
+void ACHTPlayerController::SetCameramaxx(float x){
+	Cameramaxx = x;
+}
+void ACHTPlayerController::FinishGame() {
+	GetPawn()->DisableInput(this);
+	if (auto CHTHUD = Cast<ACHTHUD>(GetHUD())) {
+		CHTHUD->ShowFinishWidget();
 	}
 }

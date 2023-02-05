@@ -30,6 +30,7 @@ void ACHTBaseEnemySpawner::BeTouched(UPrimitiveComponent * OverlappedComponent, 
 			Touched = true;
 			StartSpawn();
 			if (auto PC = Cast<ACHTPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0))) {
+				PC->SetCameramaxx(GetActorLocation().X);
 				PC->CameraLocked = false;
 			}
 		}

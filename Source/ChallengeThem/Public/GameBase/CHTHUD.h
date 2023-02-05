@@ -36,6 +36,8 @@ public:
 		void RemoveEscMenuWidget();
 	UFUNCTION(BlueprintCallable)
 		void ShowCheckpointWidget();
+	UFUNCTION(BlueprintCallable)
+		void ShowFinishWidget();
 protected:
 	virtual void BeginPlay() override;
 	UPROPERTY(EditDefaultsOnly, Category = Widgets)
@@ -67,4 +69,9 @@ protected:
 		TSubclassOf<UUserWidget> CheckpointWidgetClass;
 	UPROPERTY()
 		UUserWidget* CheckpointWidget;
+
+	UPROPERTY(EditDefaultsOnly, Category = Widgets)
+		TSubclassOf<UUserWidget> FinishWidgetClass;
+	UPROPERTY()
+		UUserWidget* FinishWidget;
 };

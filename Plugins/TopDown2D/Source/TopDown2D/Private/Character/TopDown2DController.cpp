@@ -10,9 +10,7 @@ ATopDown2DController::ATopDown2DController() {
 void ATopDown2DController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (CameraLocked) {
-		CameraFollow(DeltaTime);
-	}
+	CameraFollow(DeltaTime);
 }
 void ATopDown2DController::BeginPlay()
 {
@@ -34,6 +32,7 @@ void ATopDown2DController::BeginPlay()
 
 void ATopDown2DController::CameraFollow(float DeltaTime)
 {
+	if (!CameraLocked) return;
 	if (auto TopDownCharacter = GetPawn()) {
 		if (TopDownCamera) {
 			FVector Dest = TopDownCharacter->GetActorLocation();

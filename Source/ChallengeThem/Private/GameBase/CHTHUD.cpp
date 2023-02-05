@@ -92,3 +92,14 @@ void ACHTHUD::ShowCheckpointWidget() {
 		CheckpointWidget->AddToViewport();
 	}
 }
+void ACHTHUD::ShowFinishWidget() {
+	if (!FinishWidget) {
+		FinishWidget = CreateWidget<UUserWidget>(GetOwningPlayerController(), FinishWidgetClass);
+	}
+	if (FinishWidget) {
+		FinishWidget->AddToViewport();
+		GetOwningPlayerController()->SetInputMode(FInputModeUIOnly{});
+		GetOwningPlayerController()->bShowMouseCursor = true;
+		FinishWidget->SetFocus();
+	}
+}

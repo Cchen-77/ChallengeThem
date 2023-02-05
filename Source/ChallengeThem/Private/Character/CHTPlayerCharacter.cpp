@@ -81,6 +81,7 @@ void ACHTPlayerCharacter::OnMouseMove(const FInputActionValue& value) {
 
 void ACHTPlayerCharacter::OnMove(const FInputActionValue& value)
 {
+	UE_LOG(LogTemp, Display, TEXT("SB"));
 	if (IsHurting || IsDead) return;
 	Super::OnMove(value);
 	SetWeaponTransform();
@@ -122,17 +123,23 @@ void ACHTPlayerCharacter::OnHurt() {
 	IsStabbing = IsSplashing = IsFlashing = false;
 	Play2DMontage(0, "JumpToHurt");
 	Play2DMontage(1, "JumpToHurt");
+	if (auto PC = Cast<ACHTPlayerController>(GetController())) {
+		PC->StartHitShake();
+	}
 }
 void ACHTPlayerCharacter::OnHurtFinish() {
 	IsHurting = false;
 }
 void ACHTPlayerCharacter::OnDead() {
 	IsDead = true;
+	IsStabbing = IsSplashing = IsFlashing = false;
 	Play2DMontage(0, "JumpToDead");
 	Play2DMontage(1, "JumpToDead");
 	if (auto PC = Cast<ACHTPlayerController>(GetController())) {
+		PC->StartHitShake();
 		GetWorld()->GetTimerManager().SetTimer(OnDeadTimer, PC, &ACHTPlayerController::CHTRespawn, 1);
 		DisableInput(PC);
+
 	}
 }
 void ACHTPlayerCharacter::OnEsc() {

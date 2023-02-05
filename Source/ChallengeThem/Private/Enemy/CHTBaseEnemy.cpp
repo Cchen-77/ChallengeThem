@@ -128,6 +128,7 @@ void ACHTBaseEnemy::OnAttackFinish() {
 void ACHTBaseEnemy::OnHurt()
 {
 	IsHurting = true;
+	IsAttacking = false;
 	Play2DMontage("JumpToHurt");
 }
 void ACHTBaseEnemy::OnHurtFinish()
@@ -136,6 +137,8 @@ void ACHTBaseEnemy::OnHurtFinish()
 }
 void ACHTBaseEnemy::OnDead() {
 	
+	IsDead = true;
+	IsAttacking = IsHurting = false;
 	Play2DMontage("JumpToDead");
 	if (auto EnemyController = Cast<ACHTBaseEnemyController>(GetController())) {
 		EnemyController->OnEnemyDead();

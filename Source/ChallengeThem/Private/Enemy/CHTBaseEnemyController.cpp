@@ -20,3 +20,4 @@ void ACHTBaseEnemyController::OnEnemyDead() {
 		Brain->Cleanup();
 	}
 }
+
