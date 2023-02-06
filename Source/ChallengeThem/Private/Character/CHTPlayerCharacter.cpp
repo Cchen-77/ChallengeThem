@@ -81,7 +81,6 @@ void ACHTPlayerCharacter::OnMouseMove(const FInputActionValue& value) {
 
 void ACHTPlayerCharacter::OnMove(const FInputActionValue& value)
 {
-	UE_LOG(LogTemp, Display, TEXT("SB"));
 	if (IsHurting || IsDead) return;
 	Super::OnMove(value);
 	SetWeaponTransform();

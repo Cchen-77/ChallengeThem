@@ -9,7 +9,9 @@ ACHTBaseEnemyController::ACHTBaseEnemyController() {
 }
 void ACHTBaseEnemyController::OnPossess(APawn* InPawn) {
 	Super::OnPossess(InPawn);
-	if (auto Enemy = Cast<ACHTBaseEnemy>(InPawn)) {
+}
+void ACHTBaseEnemyController::Wakeup() {
+	if (auto Enemy = Cast<ACHTBaseEnemy>(GetPawn())) {
 		if (Enemy->BehaviorTreeAsset) {
 			RunBehaviorTree(Enemy->BehaviorTreeAsset);
 		}

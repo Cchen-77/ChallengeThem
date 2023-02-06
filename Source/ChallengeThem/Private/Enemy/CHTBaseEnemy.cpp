@@ -32,6 +32,7 @@ void ACHTBaseEnemy::BeginPlay() {
 	if (auto AC = Cast<AAIController>(GetController())) {
 		AC->SetFocus(UGameplayStatics::GetPlayerPawn(GetWorld(),0));
 	}
+	StartSpawn();
 }
 void ACHTBaseEnemy::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
@@ -102,8 +103,21 @@ ACHTBaseEnemyWeakpoint* ACHTBaseEnemy::SpawnWeakpoint(int WeakpointIndex,bool Ha
 	Weakpoint->AttachToComponent(WeakpointLayer, FAttachmentTransformRules::SnapToTargetIncludingScale, WeakpointSocket);
 	return Weakpoint;
 }
+void ACHTBaseEnemy::StartSpawn()
+{
+	UE_LOG(LogTemp, Display, TEXT("SB"));
+	IsSpawning = true;
+	Play2DMontage("JumpToSpawn");
+}
+void ACHTBaseEnemy::SpawnFinish()
+{
+	if (auto AC = Cast<ACHTBaseEnemyController>(GetController())) {
+		AC->Wakeup();
+	}
+	IsSpawning = false;
+}
 void ACHTBaseEnemy::OnAttack() {
-	if (IsHurting || IsDead) return;
+	if (IsHurting || IsDead||IsSpawning) return;
 	IsAttacking = true;
 	Play2DMontage("JumpToAttack");
 	if (auto CHTAnimInstance = AttackFXAnim->GetAnimInstance()) {
@@ -127,6 +141,7 @@ void ACHTBaseEnemy::OnAttackFinish() {
 }
 void ACHTBaseEnemy::OnHurt()
 {
+	if (IsSpawning) return;
 	IsHurting = true;
 	IsAttacking = false;
 	Play2DMontage("JumpToHurt");
@@ -138,7 +153,7 @@ void ACHTBaseEnemy::OnHurtFinish()
 void ACHTBaseEnemy::OnDead() {
 	
 	IsDead = true;
-	IsAttacking = IsHurting = false;
+	IsAttacking = IsHurting = IsSpawning = false;
 	Play2DMontage("JumpToDead");
 	if (auto EnemyController = Cast<ACHTBaseEnemyController>(GetController())) {
 		EnemyController->OnEnemyDead();

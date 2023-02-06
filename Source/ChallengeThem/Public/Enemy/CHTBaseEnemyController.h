@@ -17,6 +17,8 @@ public:
 	ACHTBaseEnemyController();
 	UFUNCTION()
 		void OnEnemyDead();
+	UFUNCTION()
+		void Wakeup();
 protected:
 	virtual void OnPossess(APawn* InPawn) override;
 };

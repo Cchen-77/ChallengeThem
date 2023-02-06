@@ -66,7 +66,12 @@ protected:
 		ACHTBaseEnemyWeakpoint* Weakpoint_4;
 	ACHTBaseEnemyWeakpoint* SpawnWeakpoint(int WeakpointIndex,bool HavWeakpoint);
 	int WeakpointCount = 0;
-
+	UFUNCTION(BlueprintCallable)
+		void StartSpawn();
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Actions)
+		bool IsSpawning = false;
+	UFUNCTION(BlueprintCallable)
+		void SpawnFinish();
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Actions)
 		bool IsAttacking = false;
 	UFUNCTION(BlueprintCallable)
